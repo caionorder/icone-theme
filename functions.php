@@ -557,16 +557,15 @@ function twentyten_get_gallery_images() {
 function destacada(){
 	$image_id = wp_get_attachment_url(get_post_thumbnail_id());
 	$image_url = wp_get_attachment_image_src($image_id);
-	//$image_url =  str_replace("-150x130", "",str_replace("-150x129", "",str_replace("-150x140", "", str_replace("-150x150", "", $image_url[0]))));
 	return $image_id;
 }
 function resumo($str){
 	if($str){
 		return substr(substr(strip_tags(get_the_excerpt()),0,-31),0,$str)."...";
 	} else {
-		return substr(strip_tags(get_the_excerpt()),0,-31)."...";	
+		return substr(strip_tags(get_the_excerpt()),0,-31)."...";
 	}
-	
+
 }
 function categorias(){
 	$cate = get_the_category();
@@ -579,16 +578,7 @@ function categorias(){
 	$cati = substr($cati,0,-2);
 	print $cati;
 }
-function catCor(){
-	$cate = get_the_category();
-	$cati = "";
-	foreach ($cate as $cat) {
-		if($cat->cat_name != "Noticias"){
-			$cati .= acentos($cat->cat_name)." ";
-		}
-	}
-	print $cati;
-}
+
 function acentos($str){
  	$palavra = preg_replace("/&([a-z])[a-z]+;/i", "$1", htmlentities($str));
  	return $palavra;
@@ -709,95 +699,18 @@ if($_POST['nome'] && $_POST['telefone'] && $_POST['email'] && $_POST['msg']){
 	$envia->telefone = $_POST['telefone'];
 	$envia->email = $_POST['email'];
 	$envia->mensagem = $_POST['msg'];
-	$envia->to = "contato@jornalavozdoparana.com.br";
+	$envia->to = "contato@novosite.com.br";
 	$envia->cc = "caio@iconeinternet.com.br";
 	$envia->subject = "Contato pelo Site";
 	$envia->EnviarContato();
 }
-function getDominio(){
-	$dominio = "http://www.iconeinternet.com.br/zero/wp-content/files_mf/";
-	print $dominio;
-}
-
 function getResumo($str){
-		query_posts("p=$str"); 
-		if ( have_posts() ) 
+		query_posts("p=$str");
+		if ( have_posts() )
 			while ( have_posts() ) : the_post();
 			print get_the_content();
 		endwhile; wp_reset_query();
 }
 
-class Banner{
-
-	var $id;
-	var $img;
-	var $link;
-	var $postId;
-	var $sql;
-
-	function getBanner(){
-
-		$sqlx = "cat={$this->id}&showposts=1&order=RAND";
-		$posts = get_posts($sqlx);
-		
-		foreach($posts as $post) {
-
-			$image_id = wp_get_attachment_url(get_post_thumbnail_id($post->ID));
-			$image_url = wp_get_attachment_image_src($image_id);
-
-			$this->img = $image_id;
-			$this->link = $post->post_content;
-			$this->postId= $post->ID;
-			$this->sql = $sqlx;
-
-		}
-	}
-
-}
-
 $conexao = mysql_pconnect(constant('DB_HOST'), constant('DB_USER'), constant('DB_PASSWORD')) or die(mysql_error());
 $banco = mysql_select_db(constant('DB_NAME'));
-
-function listaEstados(){
-	$sql = "select meta_value as uf from wp_postmeta where meta_key = 'estado' group by meta_value order by meta_value";
-	$query = mysql_query($sql) or die(mysql_error());
-	while ($row = mysql_fetch_array($query)) {
-		print "<option value=\"{$row['uf']}\">{$row['uf']}</option>";
-	}
-}
-
-function listaCidades($str){
-	$sql = "select * from wp_postmeta where post_id in (select post_id  from wp_postmeta where meta_key = 'estado' and meta_value = '{$str}') and meta_key = 'cidade'";
-	$query = mysql_query($sql) or die(mysql_error());
-	while ($row = mysql_fetch_array($query)) {
-		print "<option value=\"{$row['meta_value']}\">{$row['meta_value']}</option>";
-	}
-}
-
-function listaCadastros($str){
-	$sql = "select * from wp_postmeta where post_id in (select post_id  from wp_postmeta where meta_key = 'cidade' and meta_value = '{$str}') ";
-	$query = mysql_query($sql) or die(mysql_error());
-	while ($row = mysql_fetch_array($query)) {
-		
-		if($row['meta_key'] == "cidade"){	$cidade = utf8_encode($row['meta_value']); }
-		if($row['meta_key'] == "loja"){ 	$loja = utf8_encode($row['meta_value']); }
-		if($row['meta_key'] == "cidade"){ 	$cidade = utf8_encode($row['meta_value']); }
-		if($row['meta_key'] == "endereco"){ $endereco = utf8_encode($row['meta_value']); }
-		if($row['meta_key'] == "telefone"){ $telefone = utf8_encode($row['meta_value']); }
-
-
-		$saida  = "<div class=\"listcity\">
-					<h3>• {$cidade}</h3>
-					<span>{$loja}<br>
-					{$endereco}<br>
-					{$telefone}</span>
-				</div>";
-
-		if($cidade and $loja and $cidade and $endereco and $telefone){
-			print $saida;
-		}
-		
-	}
-}
-
-//}
